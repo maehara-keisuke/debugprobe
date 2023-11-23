@@ -38,7 +38,7 @@ TickType_t last_wake, interval = 100;
 static uint8_t tx_buf[32];
 static uint8_t rx_buf[32];
 // Actually s^-1 so 25ms
-#define DEBOUNCE_MS 40
+#define DEBOUNCE_MS 8 // Tune this parameter for indicator's visibility.
 static uint debounce_ticks = 5;
 
 #ifdef PICOPROBE_UART_TX_LED
@@ -86,7 +86,7 @@ void cdc_task(void)
          * Also throw away bytes if we can't write... */
         if (rx_len) {
 #ifdef PICOPROBE_UART_RX_LED
-          gpio_put(PICOPROBE_UART_RX_LED, 1);
+          gpio_put(PICOPROBE_UART_RX_LED, 0); // Turn On(Low Active)
           rx_led_debounce = debounce_ticks;
 #endif
           written = MIN(tud_cdc_write_available(), rx_len);
@@ -102,7 +102,7 @@ void cdc_task(void)
           if (rx_led_debounce)
             rx_led_debounce--;
           else
-            gpio_put(PICOPROBE_UART_RX_LED, 0);
+            gpio_put(PICOPROBE_UART_RX_LED, 1); // Turn Off(Low Active)
 #endif
         }
 
@@ -111,7 +111,7 @@ void cdc_task(void)
       if (watermark > 0) {
         size_t tx_len;
 #ifdef PICOPROBE_UART_TX_LED
-        gpio_put(PICOPROBE_UART_TX_LED, 1);
+        gpio_put(PICOPROBE_UART_TX_LED, 0);  // Turn On(Low Active)
         tx_led_debounce = debounce_ticks;
 #endif
         /* Batch up to half a FIFO of data - don't clog up on RX */
@@ -123,7 +123,7 @@ void cdc_task(void)
           if (tx_led_debounce)
             tx_led_debounce--;
           else
-            gpio_put(PICOPROBE_UART_TX_LED, 0);
+            gpio_put(PICOPROBE_UART_TX_LED, 1); // Turn Off(Low Active)
 #endif
       }
     } else if (was_connected) {
@@ -226,11 +226,11 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
   if (!dtr && !rts) {
     vTaskSuspend(uart_taskhandle);
 #ifdef PICOPROBE_UART_RX_LED
-    gpio_put(PICOPROBE_UART_RX_LED, 0);
+    gpio_put(PICOPROBE_UART_RX_LED, 1); // Turn Off(Low Active)
     rx_led_debounce = 0;
 #endif
 #ifdef PICOPROBE_UART_TX_LED
-    gpio_put(PICOPROBE_UART_TX_LED, 0);
+    gpio_put(PICOPROBE_UART_TX_LED, 1); // Turn Off(Low Active)
     tx_led_debounce = 0;
 #endif
   } else

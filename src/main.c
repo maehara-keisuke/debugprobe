@@ -42,8 +42,7 @@
 #include "tusb_edpt_handler.h"
 #include "DAP.h"
 
-// UART0 for Picoprobe debug
-// UART1 for picoprobe to target device
+// UART0 for picoprobe to target device
 
 static uint8_t TxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
 static uint8_t RxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
@@ -63,10 +62,10 @@ void usb_thread(void *ptr)
     do {
         tud_task();
 #ifdef PICOPROBE_USB_CONNECTED_LED
-        if (!gpio_get(PICOPROBE_USB_CONNECTED_LED) && tud_ready())
-            gpio_put(PICOPROBE_USB_CONNECTED_LED, 1);
+        if (tud_ready())
+            gpio_put(PICOPROBE_USB_CONNECTED_LED, 1); // Turn Off(Low Active)
         else
-            gpio_put(PICOPROBE_USB_CONNECTED_LED, 0);
+            gpio_put(PICOPROBE_USB_CONNECTED_LED, 0); // Turn On(Low Active)
 #endif
         // Go to sleep for up to a tick if nothing to do
         if (!tud_task_event_ready())

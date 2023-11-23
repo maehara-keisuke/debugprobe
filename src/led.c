@@ -32,6 +32,7 @@ void led_init(void) {
 #ifdef PICOPROBE_USB_CONNECTED_LED
     gpio_init(PICOPROBE_USB_CONNECTED_LED);
     gpio_set_dir(PICOPROBE_USB_CONNECTED_LED, GPIO_OUT);
+    gpio_put(PICOPROBE_USB_CONNECTED_LED, 1); // Turn Off(Low Active)
 #endif
 #ifdef PICOPROBE_DAP_CONNECTED_LED
     gpio_init(PICOPROBE_DAP_CONNECTED_LED);
@@ -44,9 +45,11 @@ void led_init(void) {
 #ifdef PICOPROBE_UART_RX_LED
     gpio_init(PICOPROBE_UART_RX_LED);
     gpio_set_dir(PICOPROBE_UART_RX_LED, GPIO_OUT);
+    gpio_put(PICOPROBE_UART_RX_LED, 1); // Turn Off(Low Active)
 #endif
 #ifdef PICOPROBE_UART_TX_LED
     gpio_init(PICOPROBE_UART_TX_LED);
     gpio_set_dir(PICOPROBE_UART_TX_LED, GPIO_OUT);
+    gpio_put(PICOPROBE_UART_TX_LED, 1); // Turn Off(Low Active)
 #endif
 }

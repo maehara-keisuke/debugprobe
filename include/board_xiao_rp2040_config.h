@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef BOARD_PICO_H_
-#define BOARD_PICO_H_
+#ifndef BOARD_XIAO_RP2040_H_
+#define BOARD_XIAO_RP2040_H_
 
 #define PROBE_IO_RAW
 #define PROBE_CDC_UART
@@ -39,14 +39,24 @@
 #define PROBE_PIN_RESET 1
 #endif
 
+/*
+ * Pin number and UART channel defined below is compliant with
+ * [RP2040 GPIO Functions](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf).
+ * And symbol in comment below is compliant with
+ * [XIAO RP2040 Schematic](https://wiki.seeedstudio.com/XIAO-RP2040/#schematic-online-viewer).
+ * 
+ */
 // UART config
-#define PICOPROBE_UART_TX 4
-#define PICOPROBE_UART_RX 5
-#define PICOPROBE_UART_INTERFACE uart1
-#define PICOPROBE_UART_BAUDRATE 115200
+#define PICOPROBE_UART_TX 0 // TX
+#define PICOPROBE_UART_RX 1 // RX
+#define PICOPROBE_UART_INTERFACE uart0
+#define PICOPROBE_UART_BAUDRATE 115200 // Use this baudrate in debug target.
 
-#define PICOPROBE_USB_CONNECTED_LED 25
+// LED config
+#define PICOPROBE_USB_CONNECTED_LED 16 // IO16_RGB-G
+#define PICOPROBE_UART_TX_LED 25 // IO25_RGB-B
+#define PICOPROBE_UART_RX_LED 17 // IO17_RGB-R
 
-#define PROBE_PRODUCT_STRING "Picoprobe (CMSIS-DAP)"
+#define PROBE_PRODUCT_STRING "XIAO RP2040 (CMSIS-DAP)"
 
 #endif
