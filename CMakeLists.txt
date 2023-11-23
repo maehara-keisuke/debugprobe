@@ -53,8 +53,19 @@ if (DEBUGPROBE)
     set_target_properties(picoprobe PROPERTIES 
         OUTPUT_NAME "debugprobe"
     )
+    unset(DEBUGPROBE CACHE)
 endif ()
 
+option (XIAO_RP2040 "compile for xiao rp2040" OFF)
+if (XIAO_RP2040)
+    target_compile_definitions (picoprobe PRIVATE
+	XIAO_RP2040=1
+    )
+    set_target_properties(picoprobe PROPERTIES
+        OUTPUT_NAME "xiao_rp2040"
+    )
+    unset(XIAO_RP2040 CACHE)
+endif ()
 
 target_link_libraries(picoprobe PRIVATE
         pico_multicore
