@@ -42,6 +42,9 @@
 #include "tusb_edpt_handler.h"
 #include "DAP.h"
 
+#include "hardware/pio.h"
+#include "ws2812.pio.h"
+
 // UART0 for picoprobe to target device
 
 static uint8_t TxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
@@ -52,6 +55,10 @@ static uint8_t RxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
 #define UART_TASK_PRIO (tskIDLE_PRIORITY + 3)
 #define TUD_TASK_PRIO  (tskIDLE_PRIORITY + 2)
 #define DAP_TASK_PRIO  (tskIDLE_PRIORITY + 1)
+
+#define IS_RGBW true
+#define NEO_PWR 11
+#define NEOPIX 12
 
 TaskHandle_t dap_taskhandle, tud_taskhandle;
 
@@ -89,6 +96,15 @@ int main(void) {
     stdio_uart_init();
 
     led_init();
+
+    // Initialize WS2812
+    gpio_init(NEO_PWR);
+    gpio_set_dir(NEO_PWR, GPIO_OUT);
+    gpio_put(NEO_PWR, 1); // Power On
+    PIO pio = pio1;
+    int sm = pio_claim_unused_sm(pio, true);
+    uint offset = pio_add_program(pio, &ws2812_program);
+    ws2812_program_init(pio, sm, offset, NEOPIX, 800000, IS_RGBW);
 
     picoprobe_info("Welcome to Picoprobe!\n");
 

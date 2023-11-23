@@ -50,6 +50,8 @@ This information includes:
 #include "picoprobe_config.h"
 #include "probe.h"
 
+#include "hardware/pio.h"
+
 /// Processor Clock of the Cortex-M MCU used in the Debug Unit.
 /// This value is used to calculate the SWD/JTAG clock speed.
 /* Picoprobe actually uses kHz rather than Hz, so just lie about it here */
@@ -507,14 +509,23 @@ __STATIC_INLINE void LED_CONNECTED_OUT (uint32_t bit) {
 #endif
 }
 
+static inline void put_pixel(uint32_t pixel_grb) {
+  pio_sm_put_blocking(pio1, 0, pixel_grb << 8u);
+}
+
 /** Debug Unit: Set status Target Running LED.
 \param bit status of the Target Running LED.
-           - 1: Target Running LED ON: program execution in target started.
-           - 0: Target Running LED OFF: program execution in target stopped.
+           - 1: Target Running LED Blue: program execution in target started.
+           - 0: Target Running LED Green: program execution in target stopped.
 */
 __STATIC_INLINE void LED_RUNNING_OUT (uint32_t bit) {
 #ifdef PICOPROBE_DAP_RUNNING_LED
-  gpio_put(PICOPROBE_DAP_RUNNING_LED, bit);
+  if (bit) {
+    put_pixel(0xf); // Blue
+  }
+  else {
+    put_pixel(0x40000); // Green
+  }
 #endif
 }
 

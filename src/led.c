@@ -38,10 +38,6 @@ void led_init(void) {
     gpio_init(PICOPROBE_DAP_CONNECTED_LED);
     gpio_set_dir(PICOPROBE_DAP_CONNECTED_LED, GPIO_OUT);
 #endif
-#ifdef PICOPROBE_DAP_RUNNING_LED
-    gpio_init(PICOPROBE_DAP_RUNNING_LED);
-    gpio_set_dir(PICOPROBE_DAP_RUNNING_LED, GPIO_OUT);
-#endif
 #ifdef PICOPROBE_UART_RX_LED
     gpio_init(PICOPROBE_UART_RX_LED);
     gpio_set_dir(PICOPROBE_UART_RX_LED, GPIO_OUT);
