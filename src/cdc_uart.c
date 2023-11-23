@@ -229,7 +229,7 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
     gpio_put(PICOPROBE_UART_RX_LED, 0);
     rx_led_debounce = 0;
 #endif
-#ifdef PICOPROBE_UART_RX_LED
+#ifdef PICOPROBE_UART_TX_LED
     gpio_put(PICOPROBE_UART_TX_LED, 0);
     tx_led_debounce = 0;
 #endif
