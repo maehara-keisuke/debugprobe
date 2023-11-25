@@ -111,7 +111,7 @@ void cdc_task(void)
       if (watermark > 0) {
         size_t tx_len;
 #ifdef PICOPROBE_UART_TX_LED
-        gpio_put(PICOPROBE_UART_TX_LED, 0);  // Turn On(Low Active)
+        gpio_put(PICOPROBE_UART_TX_LED, 0); // Turn On(Low Active)
         tx_led_debounce = debounce_ticks;
 #endif
         /* Batch up to half a FIFO of data - don't clog up on RX */

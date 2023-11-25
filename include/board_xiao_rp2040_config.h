@@ -44,7 +44,7 @@
  * [RP2040 GPIO Functions](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf).
  * And symbol in comment below is compliant with
  * [XIAO RP2040 Schematic](https://wiki.seeedstudio.com/XIAO-RP2040/#schematic-online-viewer).
- * 
+ *
  */
 // UART config
 #define PICOPROBE_UART_TX 0 // TX
