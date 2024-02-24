@@ -23,21 +23,20 @@
  *
  */
 
-#ifndef BOARD_PICO_H_
-#define BOARD_PICO_H_
+#ifndef BOARD_DEBUG_PROBE_H_
+#define BOARD_DEBUG_PROBE_H_
 
-#define PROBE_IO_RAW
+#define PROBE_IO_SWDI
 #define PROBE_CDC_UART
+// No reset pin 
 
 // PIO config
 #define PROBE_SM 0
-#define PROBE_PIN_OFFSET 2
-#define PROBE_PIN_SWCLK (PROBE_PIN_OFFSET + 0) // 2
-#define PROBE_PIN_SWDIO (PROBE_PIN_OFFSET + 1) // 3
-// Target reset config
-#if false
-#define PROBE_PIN_RESET 1
-#endif
+#define PROBE_PIN_OFFSET 12
+#define PROBE_PIN_SWCLK (PROBE_PIN_OFFSET + 0)
+// For level-shifted input.
+#define PROBE_PIN_SWDI (PROBE_PIN_OFFSET + 1)
+#define PROBE_PIN_SWDIO (PROBE_PIN_OFFSET + 2)
 
 // UART config
 #define PROBE_UART_TX 4
@@ -45,8 +44,12 @@
 #define PROBE_UART_INTERFACE uart1
 #define PROBE_UART_BAUDRATE 115200
 
-#define PROBE_USB_CONNECTED_LED 25
+#define PROBE_USB_CONNECTED_LED 2
+#define PROBE_DAP_CONNECTED_LED 15
+#define PROBE_DAP_RUNNING_LED 16
+#define PROBE_UART_RX_LED 7
+#define PROBE_UART_TX_LED 8
 
-#define PROBE_PRODUCT_STRING "Debugprobe on Pico (CMSIS-DAP)"
+#define PROBE_PRODUCT_STRING "Debug Probe (CMSIS-DAP)"
 
 #endif

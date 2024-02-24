@@ -64,21 +64,21 @@
 #endif
 
 #if defined(PROBE_CDC_UART)
-#define PICOPROBE_UART_TX 4
-#define PICOPROBE_UART_RX 5
-#define PICOPROBE_UART_INTERFACE uart1
-#define PICOPROBE_UART_BAUDRATE 115200
+#define PROBE_UART_TX 4
+#define PROBE_UART_RX 5
+#define PROBE_UART_INTERFACE uart1
+#define PROBE_UART_BAUDRATE 115200
 /* Flow control - some or all of these can be omitted if not used */
-#define PICOPROBE_UART_RTS 9
-#define PICOPROBE_UART_DTR 10
+#define PROBE_UART_RTS 9
+#define PROBE_UART_DTR 10
 #endif
 
 /* LED config - some or all of these can be omitted if not used */
-#define PICOPROBE_USB_CONNECTED_LED 2
-#define PICOPROBE_DAP_CONNECTED_LED 15
-#define PICOPROBE_DAP_RUNNING_LED 16
-#define PICOPROBE_UART_RX_LED 7
-#define PICOPROBE_UART_TX_LED 8
+#define PROBE_USB_CONNECTED_LED 2
+#define PROBE_DAP_CONNECTED_LED 15
+#define PROBE_DAP_RUNNING_LED 16
+#define PROBE_UART_RX_LED 7
+#define PROBE_UART_TX_LED 8
 
 #define PROBE_PRODUCT_STRING "Example Debug Probe"
 

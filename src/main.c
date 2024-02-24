@@ -34,7 +34,7 @@
 #include "bsp/board.h"
 #include "tusb.h"
 
-#include "picoprobe_config.h"
+#include "probe_config.h"
 #include "probe.h"
 #include "cdc_uart.h"
 #include "get_serial.h"
@@ -45,7 +45,7 @@
 #include "hardware/pio.h"
 #include "ws2812.pio.h"
 
-// UART0 for picoprobe to target device
+// UART0 for debugprobe to target device
 
 static uint8_t TxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
 static uint8_t RxDataBuffer[CFG_TUD_HID_EP_BUFSIZE];
@@ -68,11 +68,11 @@ void usb_thread(void *ptr)
     wake = xTaskGetTickCount();
     do {
         tud_task();
-#ifdef PICOPROBE_USB_CONNECTED_LED
+#ifdef PROBE_USB_CONNECTED_LED
         if (tud_ready())
-            gpio_put(PICOPROBE_USB_CONNECTED_LED, 1); // Turn Off(Low Active)
+            gpio_put(PROBE_USB_CONNECTED_LED, 1); // Turn Off(Low Active)
         else
-            gpio_put(PICOPROBE_USB_CONNECTED_LED, 0); // Turn On(Low Active)
+            gpio_put(PROBE_USB_CONNECTED_LED, 0); // Turn On(Low Active)
 #endif
         // Go to sleep for up to a tick if nothing to do
         if (!tud_task_event_ready())
@@ -106,7 +106,7 @@ int main(void) {
     uint offset = pio_add_program(pio, &ws2812_program);
     ws2812_program_init(pio, sm, offset, NEOPIX, 800000, IS_RGBW);
 
-    picoprobe_info("Welcome to Picoprobe!\n");
+    probe_info("Welcome to debugprobe!\n");
 
     if (THREADED) {
         /* UART needs to preempt USB as if we don't, characters get lost */
@@ -121,7 +121,7 @@ int main(void) {
         tud_task();
         cdc_task();
 
-#if (PICOPROBE_DEBUG_PROTOCOL == PROTO_DAP_V2)
+#if (PROBE_DEBUG_PROTOCOL == PROTO_DAP_V2)
         if (tud_vendor_available()) {
             uint32_t resp_len;
             tud_vendor_read(RxDataBuffer, sizeof(RxDataBuffer));
@@ -160,7 +160,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
   tud_hid_report(0, TxDataBuffer, response_size);
 }
 
-#if (PICOPROBE_DEBUG_PROTOCOL == PROTO_DAP_V2)
+#if (PROBE_DEBUG_PROTOCOL == PROTO_DAP_V2)
 extern uint8_t const desc_ms_os_20[];
 
 bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const * request)
