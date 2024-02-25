@@ -47,16 +47,16 @@
  *
  */
 // UART config
-#define PICOPROBE_UART_TX 0 // TX
-#define PICOPROBE_UART_RX 1 // RX
-#define PICOPROBE_UART_INTERFACE uart0
-#define PICOPROBE_UART_BAUDRATE 115200 // Use this baudrate in debug target.
+#define PROBE_UART_TX 0 // TX
+#define PROBE_UART_RX 1 // RX
+#define PROBE_UART_INTERFACE uart0
+#define PROBE_UART_BAUDRATE 115200 // Use this baudrate in debug target.
 
 // LED config
-#define PICOPROBE_USB_CONNECTED_LED 16 // IO16_RGB-G
-#define PICOPROBE_UART_TX_LED 25 // IO25_RGB-B
-#define PICOPROBE_UART_RX_LED 17 // IO17_RGB-R
-#define PICOPROBE_DAP_RUNNING_LED // Just to use compile switch.
+#define PROBE_USB_CONNECTED_LED 16 // IO16_RGB-G
+#define PROBE_UART_TX_LED 25 // IO25_RGB-B
+#define PROBE_UART_RX_LED 17 // IO17_RGB-R
+#define PROBE_DAP_RUNNING_LED // Just to use compile switch.
 
 #define PROBE_PRODUCT_STRING "XIAO RP2040 (CMSIS-DAP)"
 
