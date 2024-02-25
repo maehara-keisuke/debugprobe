@@ -67,7 +67,7 @@ do { \
 
 #ifdef DEBUG_ON_PICO 
 #include "board_pico_config.h"
-#elif XIAO_RP2040
+#elif DEBUG_ON_XIAO_RP2040
 #include "board_xiao_rp2040_config.h"
 #else
 #include "board_debug_probe_config.h"

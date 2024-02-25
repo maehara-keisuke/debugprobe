@@ -54,18 +54,18 @@ if (DEBUG_ON_PICO)
     set_target_properties(debugprobe PROPERTIES 
         OUTPUT_NAME "debugprobe_on_pico"
     )
-    unset(DEBUGPROBE CACHE)
+    unset(DEBUG_ON_PICO CACHE)
 endif ()
 
-option (XIAO_RP2040 "compile for xiao rp2040" OFF)
-if (XIAO_RP2040)
-    target_compile_definitions (picoprobe PRIVATE
-	XIAO_RP2040=1
+option (DEBUG_ON_XIAO_RP2040 "Compile firmware for the XIAO RP2040 instead of Debug Probe" OFF)
+if (DEBUG_ON_XIAO_RP2040)
+    target_compile_definitions (debugprobe PRIVATE
+	DEBUG_ON_XIAO_RP2040=1
     )
-    set_target_properties(picoprobe PROPERTIES
-        OUTPUT_NAME "xiao_rp2040"
+    set_target_properties(debugprobe PROPERTIES
+        OUTPUT_NAME "debugprobe_on_xiao_rp2040"
     )
-    unset(XIAO_RP2040 CACHE)
+    unset(DEBUG_ON_XIAO_RP2040 CACHE)
 endif ()
 
 target_link_libraries(debugprobe PRIVATE
