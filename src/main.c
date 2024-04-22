@@ -86,14 +86,16 @@ void usb_thread(void *ptr)
 #endif
 
 int main(void) {
+    // Declare pins in binary information
+    bi_decl_config();
 
     board_init();
     usb_serial_init();
     cdc_uart_init();
     tusb_init();
+    stdio_uart_init();
 
     DAP_Setup();
-    stdio_uart_init();
 
     led_init();
 

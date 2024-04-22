@@ -48,7 +48,7 @@ tusb_desc_device_t const desc_device =
 
     .idVendor           = 0x2E8A, // Pi
     .idProduct          = 0x000c, // CMSIS-DAP Debug Probe
-    .bcdDevice          = 0x0103, // Version 01.03
+    .bcdDevice          = 0x0201, // Version 02.01
     .iManufacturer      = 0x01,
     .iProduct           = 0x02,
     .iSerialNumber      = 0x03,
@@ -97,7 +97,7 @@ uint8_t const * tud_hid_descriptor_report_cb(uint8_t itf)
   return desc_hid_report;
 }
 
-uint8_t const desc_configuration[] =
+uint8_t desc_configuration[] =
 {
   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0, 100),
   // Interface 0
@@ -121,6 +121,8 @@ uint8_t const desc_configuration[] =
 uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 {
   (void) index; // for multiple configurations
+  /* Hack in CAP_BREAK support */
+  desc_configuration[CONFIG_TOTAL_LEN - TUD_CDC_DESC_LEN + 8 + 9 + 5 + 5 + 4 - 1] = 0x6;
   return desc_configuration;
 }
 

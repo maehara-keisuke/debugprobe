@@ -33,6 +33,8 @@
 
 TaskHandle_t uart_taskhandle;
 TickType_t last_wake, interval = 100;
+volatile TickType_t break_expiry;
+volatile bool timed_break;
 
 /* Max 1 FIFO worth of data */
 static uint8_t tx_buf[32];
@@ -42,7 +44,7 @@ static uint8_t rx_buf[32];
 static uint debounce_ticks = 5;
 
 #ifdef PROBE_UART_TX_LED
-static uint tx_led_debounce;
+static volatile uint tx_led_debounce;
 #endif
 
 #ifdef PROBE_UART_RX_LED
@@ -56,11 +58,23 @@ void cdc_uart_init(void) {
     gpio_set_pulls(PROBE_UART_RX, 1, 0);
     uart_init(PROBE_UART_INTERFACE, PROBE_UART_BAUDRATE);
 
+#ifdef PROBE_UART_HWFC
+    /* HWFC implies that hardware flow control is implemented and the
+     * UART operates in "full-duplex" mode (See USB CDC PSTN120 6.3.12).
+     * Default to pulling in the active direction, so an unconnected CTS
+     * behaves the same as if CTS were not enabled. */
+    gpio_set_pulls(PROBE_UART_CTS, 0, 1);
+    gpio_set_function(PROBE_UART_RTS, GPIO_FUNC_UART);
+    gpio_set_function(PROBE_UART_CTS, GPIO_FUNC_UART);
+    uart_set_hw_flow(PROBE_UART_INTERFACE, true, true);
+#else
 #ifdef PROBE_UART_RTS
     gpio_init(PROBE_UART_RTS);
     gpio_set_dir(PROBE_UART_RTS, GPIO_OUT);
     gpio_put(PROBE_UART_RTS, 1);
 #endif
+#endif
+
 #ifdef PROBE_UART_DTR
     gpio_init(PROBE_UART_DTR);
     gpio_set_dir(PROBE_UART_DTR, GPIO_OUT);
@@ -68,11 +82,12 @@ void cdc_uart_init(void) {
 #endif
 }
 
-void cdc_task(void)
+bool cdc_task(void)
 {
     static int was_connected = 0;
     static uint cdc_tx_oe = 0;
     uint rx_len = 0;
+    bool keep_alive = false;
 
     // Consume uart fifo regardless even if not connected
     while(uart_is_readable(PROBE_UART_INTERFACE) && (rx_len < sizeof(rx_buf))) {
@@ -126,23 +141,44 @@ void cdc_task(void)
             gpio_put(PROBE_UART_TX_LED, 1); // Turn Off(Low Active)
 #endif
       }
+      /* Pending break handling */
+      if (timed_break) {
+        if (((int)break_expiry - (int)xTaskGetTickCount()) < 0) {
+          timed_break = false;
+          uart_set_break(PROBE_UART_INTERFACE, false);
+#ifdef PROBE_UART_TX_LED
+          tx_led_debounce = 0;
+#endif
+        } else {
+          keep_alive = true;
+        }
+      }
     } else if (was_connected) {
       tud_cdc_write_clear();
+      uart_set_break(PROBE_UART_INTERFACE, false);
+      timed_break = false;
       was_connected = 0;
+#ifdef PROBE_UART_TX_LED
+      tx_led_debounce = 0;
+#endif
       cdc_tx_oe = 0;
     }
+    return keep_alive;
 }
 
 void cdc_thread(void *ptr)
 {
   BaseType_t delayed;
   last_wake = xTaskGetTickCount();
+  bool keep_alive;
   /* Threaded with a polling interval that scales according to linerate */
   while (1) {
-    cdc_task();
-    delayed = xTaskDelayUntil(&last_wake, interval);
-    if (delayed == pdFALSE)
-      last_wake = xTaskGetTickCount();
+    keep_alive = cdc_task();
+    if (!keep_alive) {
+      delayed = xTaskDelayUntil(&last_wake, interval);
+        if (delayed == pdFALSE)
+          last_wake = xTaskGetTickCount();
+    }
   }
 }
 
@@ -235,4 +271,33 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
 #endif
   } else
     vTaskResume(uart_taskhandle);
+}
+
+void tud_cdc_send_break_cb(uint8_t itf, uint16_t wValue) {
+  switch(wValue) {
+    case 0:
+    uart_set_break(PROBE_UART_INTERFACE, false);
+    timed_break = false;
+#ifdef PROBE_UART_TX_LED
+    tx_led_debounce = 0;
+#endif
+    break;
+    case 0xffff:
+    uart_set_break(PROBE_UART_INTERFACE, true);
+    timed_break = false;
+#ifdef PROBE_UART_TX_LED
+    gpio_put(PROBE_UART_TX_LED, 1);
+    tx_led_debounce = 1 << 30;
+#endif
+    break;
+    default:
+    uart_set_break(PROBE_UART_INTERFACE, true);
+    timed_break = true;
+#ifdef PROBE_UART_TX_LED
+    gpio_put(PROBE_UART_TX_LED, 1);
+    tx_led_debounce = 1 << 30;
+#endif
+    break_expiry = xTaskGetTickCount() + (wValue * (configTICK_RATE_HZ / 1000));
+    break;
+  }
 }
